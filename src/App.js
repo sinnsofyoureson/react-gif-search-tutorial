@@ -1,25 +1,35 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import request from 'superagent';
+
+import SearchBar from './components/SearchBar';
+import GifList from './components/GifList';
 
 class App extends Component {
+
+  constructor() {
+    super();
+
+    this.state = {
+      gifs: []
+    }
+  }
+
+  handleTermChange = (term) => {
+    const url = `https://api.giphy.com/v1/gifs/search?api_key=RQ6eqXHIgjE98KJkT7YeLcH5GBh4vB6L&q=${term.replace(/\s/g, '+')}&limit=27&offset=0&rating=R`;
+
+    request.get(url, (err, res) => {
+      this.setState({ gifs: res.body.data })
+    });
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <div>
+          <SearchBar onTermChange={this.handleTermChange} />
+          <GifList gifs={this.state.gifs} />
+        </div>
       </div>
     );
   }
